@@ -10,4 +10,6 @@ public interface AddressService {
     AddressDTO getAddressById(Long userId, Long addressId);
     AddressDTO updateAddress(Long userId, Long addressId, AddressDTO addressDTO);
     void deleteAddress(Long userId, Long addressId);
+
+    List<AddressDTO> getAllAddressesGlobally();
 } 

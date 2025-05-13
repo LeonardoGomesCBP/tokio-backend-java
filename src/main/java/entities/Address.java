@@ -1,10 +1,18 @@
 package entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
+@Table(name = "address")
 @Data
 public class Address {
 
@@ -14,7 +22,7 @@ public class Address {
 
     private String street;
 
-    @NotEmpty(message = "Number is required")
+    @NotBlank(message = "Número é obrigatório")
     private String number;
 
     private String complement;
@@ -25,7 +33,7 @@ public class Address {
 
     private String state;
 
-    @NotEmpty(message = "ZipCode is required")
+    @NotBlank(message = "CEP é obrigatório")
     private String zipCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
