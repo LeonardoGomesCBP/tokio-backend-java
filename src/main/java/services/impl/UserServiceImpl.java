@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +77,9 @@ public class UserServiceImpl implements UserService {
             savedUser.getId(),
             savedUser.getName(),
             savedUser.getEmail(),
-            savedAddresses
+            savedAddresses,
+            savedUser.getCreatedAt(),
+            savedUser.getUpdatedAt()
         );
     }
 
@@ -90,10 +95,34 @@ public class UserServiceImpl implements UserService {
                     user.getId(),
                     user.getName(),
                     user.getEmail(),
-                    addresses
+                    addresses,
+                    user.getCreatedAt(),
+                    user.getUpdatedAt()
                 );
             })
             .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        
+        List<UserDTO> userDTOs = userPage.getContent().stream()
+            .map(user -> {
+                List<AddressDTO> addresses = addressService.getAllAddressesByUserId(user.getId());
+                return new UserDTO(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    addresses,
+                    user.getCreatedAt(),
+                    user.getUpdatedAt()
+                );
+            })
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(userDTOs, pageable, userPage.getTotalElements());
     }
 
     @Override
@@ -108,7 +137,9 @@ public class UserServiceImpl implements UserService {
             user.getId(),
             user.getName(),
             user.getEmail(),
-            addresses
+            addresses,
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 
@@ -134,7 +165,9 @@ public class UserServiceImpl implements UserService {
             updatedUser.getId(),
             updatedUser.getName(),
             updatedUser.getEmail(),
-            addresses
+            addresses,
+            updatedUser.getCreatedAt(),
+            updatedUser.getUpdatedAt()
         );
     }
 
@@ -163,7 +196,31 @@ public class UserServiceImpl implements UserService {
             updatedUser.getId(),
             updatedUser.getName(),
             updatedUser.getEmail(),
-            addresses
+            addresses,
+            updatedUser.getCreatedAt(),
+            updatedUser.getUpdatedAt()
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDTO> searchUsers(String searchTerm, Pageable pageable) {
+        Page<User> userPage = userRepository.findByNameOrEmailContaining(searchTerm, pageable);
+        
+        List<UserDTO> userDTOs = userPage.getContent().stream()
+            .map(user -> {
+                List<AddressDTO> addresses = addressService.getAllAddressesByUserId(user.getId());
+                return new UserDTO(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    addresses,
+                    user.getCreatedAt(),
+                    user.getUpdatedAt()
+                );
+            })
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(userDTOs, pageable, userPage.getTotalElements());
     }
 } 

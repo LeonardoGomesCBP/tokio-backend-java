@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +61,9 @@ public class AddressServiceImpl implements AddressService {
             savedAddress.getCity(),
             savedAddress.getState(),
             savedAddress.getZipCode(),
-            userId
+            userId,
+            savedAddress.getCreatedAt(),
+            savedAddress.getUpdatedAt()
         );
     }
 
@@ -80,9 +85,38 @@ public class AddressServiceImpl implements AddressService {
                 address.getCity(),
                 address.getState(),
                 address.getZipCode(),
-                address.getUser().getId()
+                address.getUser().getId(),
+                address.getCreatedAt(),
+                address.getUpdatedAt()
             ))
             .collect(Collectors.toList());
+    }
+    
+    @Override
+    public Page<AddressDTO> getAllAddressesByUserId(Long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User", "id", userId);
+        }
+        
+        Page<Address> addressPage = addressRepository.findByUserId(userId, pageable);
+        
+        List<AddressDTO> addressDTOs = addressPage.getContent().stream()
+            .map(address -> new AddressDTO(
+                address.getId(),
+                address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
+                address.getNeighborhood(),
+                address.getCity(),
+                address.getState(),
+                address.getZipCode(),
+                address.getUser().getId(),
+                address.getCreatedAt(),
+                address.getUpdatedAt()
+            ))
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(addressDTOs, pageable, addressPage.getTotalElements());
     }
 
     @Override
@@ -103,7 +137,9 @@ public class AddressServiceImpl implements AddressService {
             address.getCity(),
             address.getState(),
             address.getZipCode(),
-            userId
+            userId,
+            address.getCreatedAt(),
+            address.getUpdatedAt()
         );
     }
 
@@ -141,7 +177,9 @@ public class AddressServiceImpl implements AddressService {
             updatedAddress.getCity(),
             updatedAddress.getState(),
             updatedAddress.getZipCode(),
-            userId
+            userId,
+            updatedAddress.getCreatedAt(),
+            updatedAddress.getUpdatedAt()
         );
     }
 
@@ -159,7 +197,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDTO> getAllAddressesGlobally() {
+    public List<AddressDTO> getAllAddresses() {
         List<Address> addresses = addressRepository.findAll();
         return addresses.stream()
             .map(address -> new AddressDTO(
@@ -171,8 +209,83 @@ public class AddressServiceImpl implements AddressService {
                 address.getCity(),
                 address.getState(),
                 address.getZipCode(),
-                address.getUser() != null ? address.getUser().getId() : null 
+                address.getUser() != null ? address.getUser().getId() : null,
+                address.getCreatedAt(),
+                address.getUpdatedAt()
             ))
             .collect(Collectors.toList());
+    }
+    
+    @Override
+    public Page<AddressDTO> getAllAddresses(Pageable pageable) {
+        Page<Address> addressPage = addressRepository.findAll(pageable);
+        
+        List<AddressDTO> addressDTOs = addressPage.getContent().stream()
+            .map(address -> new AddressDTO(
+                address.getId(),
+                address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
+                address.getNeighborhood(),
+                address.getCity(),
+                address.getState(),
+                address.getZipCode(),
+                address.getUser() != null ? address.getUser().getId() : null,
+                address.getCreatedAt(),
+                address.getUpdatedAt()
+            ))
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(addressDTOs, pageable, addressPage.getTotalElements());
+    }
+
+    @Override
+    public Page<AddressDTO> searchAddresses(String searchTerm, Pageable pageable) {
+        Page<Address> addressPage = addressRepository.findBySearchTerm(searchTerm, pageable);
+        
+        List<AddressDTO> addressDTOs = addressPage.getContent().stream()
+            .map(address -> new AddressDTO(
+                address.getId(),
+                address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
+                address.getNeighborhood(),
+                address.getCity(),
+                address.getState(),
+                address.getZipCode(),
+                address.getUser() != null ? address.getUser().getId() : null,
+                address.getCreatedAt(),
+                address.getUpdatedAt()
+            ))
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(addressDTOs, pageable, addressPage.getTotalElements());
+    }
+    
+    @Override
+    public Page<AddressDTO> searchAddressesByUserId(Long userId, String searchTerm, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User", "id", userId);
+        }
+        
+        Page<Address> addressPage = addressRepository.findByUserIdAndSearchTerm(userId, searchTerm, pageable);
+        
+        List<AddressDTO> addressDTOs = addressPage.getContent().stream()
+            .map(address -> new AddressDTO(
+                address.getId(),
+                address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
+                address.getNeighborhood(),
+                address.getCity(),
+                address.getState(),
+                address.getZipCode(),
+                address.getUser().getId(),
+                address.getCreatedAt(),
+                address.getUpdatedAt()
+            ))
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(addressDTOs, pageable, addressPage.getTotalElements());
     }
 }

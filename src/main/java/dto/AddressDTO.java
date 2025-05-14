@@ -1,5 +1,7 @@
 package dto;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 
 public record AddressDTO(
@@ -11,5 +13,7 @@ public record AddressDTO(
     String city,
     String state,
     @NotBlank(message = "CEP é obrigatório") String zipCode,
-    Long userId
+    Long userId,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt
 ) {} 

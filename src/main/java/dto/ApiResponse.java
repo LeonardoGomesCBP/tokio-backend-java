@@ -13,10 +13,10 @@ public class ApiResponse<T> {
     private T data;
     
     public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>("SUCCESS", message, data);
+        return new ApiResponse<>("success", message, data);
     }
     
     public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>("ERROR", message, null);
+        return new ApiResponse<>("error", message, null);
     }
 } 
