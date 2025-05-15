@@ -6,8 +6,10 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +26,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import dto.AddressDTO;
 import dto.CreateUserDTO;
 import dto.UserDTO;
+import entities.Role;
+import entities.Role.ERole;
 import entities.User;
 import exception.ResourceNotFoundException;
+import repositories.RoleRepository;
 import repositories.UserRepository;
 import services.AddressService;
+import services.CepService;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -40,6 +46,12 @@ class UserServiceImplTest {
 
     @Mock
     private AddressService addressService;
+    
+    @Mock
+    private CepService cepService;
+    
+    @Mock
+    private RoleRepository roleRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -49,10 +61,14 @@ class UserServiceImplTest {
     private CreateUserDTO createUserDTO;
     private List<AddressDTO> addresses;
     private LocalDateTime now;
+    private Role userRole;
 
     @BeforeEach
     void setUp() {
         now = LocalDateTime.now();
+        
+        userRole = new Role(ERole.ROLE_USER);
+        userRole.setId(1L);
         
         user = new User();
         user.setId(1L);
@@ -61,6 +77,10 @@ class UserServiceImplTest {
         user.setPassword("encoded_password");
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
+        
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
+        user.setRoles(roles);
 
         addresses = new ArrayList<>();
         
@@ -87,6 +107,7 @@ class UserServiceImplTest {
         when(userRepository.findByEmail(anyString())).thenReturn(null);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(userRole));
 
         // Act
         UserDTO result = userService.createUser(createUserDTO);
@@ -99,6 +120,7 @@ class UserServiceImplTest {
         
         verify(userRepository).findByEmail(createUserDTO.email());
         verify(passwordEncoder).encode(createUserDTO.password());
+        verify(roleRepository).findByName(ERole.ROLE_USER);
         verify(userRepository).save(any(User.class));
     }
 

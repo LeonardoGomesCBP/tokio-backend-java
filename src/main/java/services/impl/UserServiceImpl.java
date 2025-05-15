@@ -66,7 +66,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(createUserDTO.email());
         user.setPassword(passwordEncoder.encode(createUserDTO.password()));
         
-        // Adicionar ROLE_USER por padrão se nenhuma role estiver definida
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Role não encontrada: " + ERole.ROLE_USER));

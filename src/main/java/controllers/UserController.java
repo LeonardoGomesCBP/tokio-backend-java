@@ -101,18 +101,6 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and #id == authentication.principal.id)")
     public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
         try {
-            // Obter informações do usuário autenticado para debugging
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.getPrincipal() instanceof User) {
-                User currentUser = (User) auth.getPrincipal();
-                System.out.println("DEBUG - Auth User ID: " + currentUser.getId());
-                System.out.println("DEBUG - Path ID: " + id);
-                System.out.println("DEBUG - Roles: " + auth.getAuthorities());
-                System.out.println("DEBUG - Condição: " + (currentUser.getId().equals(id)));
-            } else {
-                System.out.println("DEBUG - Auth User não é uma instância de User ou é nulo");
-            }
-            
             UserDTO user = userService.getUserById(id);
             return new ResponseEntity<>(
                 ApiResponse.success("Usuário recuperado com sucesso", user),
