@@ -1,7 +1,9 @@
 package services.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,13 @@ import dto.AddressDTO;
 import dto.CreateUserDTO;
 import dto.CreateUserPasswordDTO;
 import dto.UserDTO;
+import entities.Role;
+import entities.Role.ERole;
 import entities.User;
 import exception.EmailAlreadyExistsException;
 import exception.InvalidCepException;
 import exception.ResourceNotFoundException;
+import repositories.RoleRepository;
 import repositories.UserRepository;
 import services.AddressService;
 import services.CepService;
@@ -39,6 +44,9 @@ public class UserServiceImpl implements UserService {
     
     @Autowired
     private CepService cepService;
+    
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     @Transactional
@@ -57,6 +65,15 @@ public class UserServiceImpl implements UserService {
         user.setName(createUserDTO.name());
         user.setEmail(createUserDTO.email());
         user.setPassword(passwordEncoder.encode(createUserDTO.password()));
+        
+        // Adicionar ROLE_USER por padrão se nenhuma role estiver definida
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Role não encontrada: " + ERole.ROLE_USER));
+            Set<Role> roles = new HashSet<>();
+            roles.add(userRole);
+            user.setRoles(roles);
+        }
         
         User savedUser = userRepository.save(user);
         

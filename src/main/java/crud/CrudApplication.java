@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"controllers", "services", "repositories", "entities", "security", "config"})
+@ComponentScan(basePackages = {"controllers", "services", "repositories", "entities", "security", "config", "exception"})
 @EnableJpaRepositories(basePackages = "repositories")
 @EntityScan(basePackages = "entities")
 @EnableJpaAuditing
