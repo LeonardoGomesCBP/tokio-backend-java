@@ -20,6 +20,15 @@ API RESTful de CRUD desenvolvida com Spring Boot, Java 21 e PostgreSQL.
 - Paginação e ordenação de resultados
 - Busca por termos em usuários e endereços
 
+## Pré-requisitos
+
+Para executar este projeto, você precisa ter instalado:
+
+- [Docker](https://www.docker.com/products/docker-desktop/) (v20.10+)
+- [Docker Compose](https://docs.docker.com/compose/install/) (já incluído no Docker Desktop)
+
+> **Observação**: É possível executar o projeto diretamente no seu computador sem Docker, porém as configurações serão mais complexas e demoradas, exigindo instalação e configuração manual do Java 21, PostgreSQL e variáveis de ambiente.
+
 ## Executando com Docker
 
 Todo o ambiente necessário (aplicação e banco de dados PostgreSQL) será configurado automaticamente com Docker:
@@ -45,7 +54,7 @@ Ou simplesmente dê um duplo clique no arquivo `run-docker.bat`.
 ### Manualmente com Docker Compose:
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/crud.git
+git clone https://github.com/LeonardoGomesCBP/tokio-backend-java
 cd crud
 
 # Execute com Docker Compose
